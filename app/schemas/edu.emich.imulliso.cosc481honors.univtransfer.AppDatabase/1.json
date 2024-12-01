@@ -1,0 +1,117 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "2453c858615494100d934da66bdb54a2",
+    "entities": [
+      {
+        "tableName": "college",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`college_id` INTEGER NOT NULL, `college_name` TEXT NOT NULL, `is_four_year` INTEGER NOT NULL, PRIMARY KEY(`college_id`))",
+        "fields": [
+          {
+            "fieldPath": "collegeId",
+            "columnName": "college_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collegeName",
+            "columnName": "college_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isFourYear",
+            "columnName": "is_four_year",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "college_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "course",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`course_id` INTEGER NOT NULL, `college_id` INTEGER NOT NULL, `course_name` TEXT NOT NULL, `subject_code` TEXT NOT NULL, `course_number` TEXT NOT NULL, PRIMARY KEY(`course_id`))",
+        "fields": [
+          {
+            "fieldPath": "courseId",
+            "columnName": "course_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "collegeId",
+            "columnName": "college_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "courseName",
+            "columnName": "course_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subjectCode",
+            "columnName": "subject_code",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "courseNumber",
+            "columnName": "course_number",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "course_id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "transfer_equiv",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`course1Id` INTEGER NOT NULL, `course2Id` INTEGER NOT NULL, PRIMARY KEY(`course1Id`, `course2Id`))",
+        "fields": [
+          {
+            "fieldPath": "course1Id",
+            "columnName": "course1Id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "course2Id",
+            "columnName": "course2Id",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "course1Id",
+            "course2Id"
+          ]
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2453c858615494100d934da66bdb54a2')"
+    ]
+  }
+}

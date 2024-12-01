@@ -6,20 +6,18 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Search
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SmallTopAppBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,49 +33,50 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import edu.emich.imulliso.cosc481honors.univtransfer.ui.theme.UnivTransferTheme
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val db = Room.databaseBuilder(
+            applicationContext, AppDatabase::class.java, "transfer-db"
+        ).createFromAsset("transfer-db.db").build()
         setContent {
             UnivTransferTheme {
-                App(modifier=Modifier.fillMaxSize())
+                App(database = db, modifier = Modifier.fillMaxSize())
             }
 
         }
     }
+
 }
 
 
 @Serializable
 object Home
+
 @Serializable
 object Search
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(modifier: Modifier = Modifier) {
+fun App(database: AppDatabase, modifier: Modifier = Modifier) {
     val navController = rememberNavController()
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title={ Text(stringResource(R.string.app_name)) }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navController.navigate(route = Search)
-                }
-            ) {
-                Icon(Icons.Outlined.Search, stringResource(R.string.new_search))
 
-            }
-        },
-        modifier = Modifier.fillMaxSize()
+    Scaffold(topBar = {
+        TopAppBar(title = { Text(stringResource(R.string.app_name)) })
+    }, floatingActionButton = {
+        FloatingActionButton(onClick = {
+            navController.navigate(route = Search)
+        }) {
+            Icon(Icons.Outlined.Search, stringResource(R.string.new_search))
+
+        }
+    }, modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = Home) {
             composable<Home> {
@@ -101,18 +100,20 @@ fun App(modifier: Modifier = Modifier) {
 @ExperimentalMaterial3Api
 @Composable
 fun SearchScreen(modifier: Modifier = Modifier) {
-    var query by remember { mutableStateOf("")}
-    Box(modifier=modifier) {
+    var query by remember { mutableStateOf("") }
+    Box(modifier = modifier) {
         Column {
             SearchBar(
                 query = query,
                 onQueryChange = { query = it },
                 onSearch = {},
                 active = true,
-                onActiveChange = {  },
-                placeholder = { Text(stringResource(R.string.enter_4_year_college_name))}
+                onActiveChange = { },
+                placeholder = { Text(stringResource(R.string.enter_4_year_college_name)) }
             ) {
+                Column(Modifier.verticalScroll(rememberScrollState())) {
 
+                }
             }
         }
     }
@@ -121,32 +122,17 @@ fun SearchScreen(modifier: Modifier = Modifier) {
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
     Box(
-        contentAlignment = Alignment.Center,
-        modifier=modifier
+        contentAlignment = Alignment.Center, modifier = modifier
     ) {
-        Text("Hello world")
+        Text("Press the search icon to start")
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun HomeScreenPreview(modifier: Modifier=Modifier) {
-    HomeScreen(modifier=modifier.size(414.dp, 896.dp))
+fun HomeScreenPreview(modifier: Modifier = Modifier) {
+    HomeScreen(modifier = modifier.size(414.dp, 896.dp))
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hi, my name is $name!",
-        modifier = modifier
-    )
-}
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    UnivTransferTheme {
-        Greeting("Isaac")
-    }
-}
 
