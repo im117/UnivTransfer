@@ -6,23 +6,23 @@ import androidx.room.Query
 @Dao
 interface CollegeDao {
     @Query("SELECT * FROM college")
-    fun getAll(): List<College>
+    suspend fun getAll(): List<College>
 
     @Query("SELECT * FROM college WHERE is_four_year = 0")
-    fun getTwoYear(): List<College>
+    suspend fun getTwoYear(): List<College>
 
     @Query(
         """
         SELECT * FROM college
-        WHERE college_name LIKE '%'+:query+'%'
+        WHERE LOWER(college_name) LIKE '%' || LOWER(:query) || '%'
         ORDER BY college_name
         LIMIT 5
     """
     )
-    fun searchTop5(query: String): List<College>
+    suspend fun searchTop5(query: String): List<College>
 
 
     @Query("SELECT * FROM college WHERE is_four_year = 1")
-    fun getFourYear(): List<College>
+    suspend fun getFourYear(): List<College>
 
 }

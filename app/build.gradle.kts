@@ -69,11 +69,15 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 
+    // room implementation (adapted from https://developer.android.com/jetpack/androidx/releases/room#declaring_dependencies)
     implementation(libs.androidx.room.runtime)
 
     // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
-    // See Add the KSP plugin to your project
+    // (source: https://developer.android.com/jetpack/androidx/releases/room#declaring_dependencies)
     ksp(libs.androidx.room.compiler)
+
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.kotlinx.coroutines.android)
 
     api(libs.androidx.navigation.fragment.ktx)
 

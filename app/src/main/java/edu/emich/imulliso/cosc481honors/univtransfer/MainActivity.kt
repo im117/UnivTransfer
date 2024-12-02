@@ -1,5 +1,6 @@
 package edu.emich.imulliso.cosc481honors.univtransfer
 
+import android.icu.util.Calendar
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -16,14 +17,17 @@ import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +39,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import edu.emich.imulliso.cosc481honors.univtransfer.ui.theme.UnivTransferTheme
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
@@ -56,11 +61,13 @@ class MainActivity : ComponentActivity() {
 }
 
 
+
 @Serializable
 object Home
 
 @Serializable
 object Search
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,6 +95,7 @@ fun App(database: AppDatabase, modifier: Modifier = Modifier) {
             }
             composable<Search> {
                 SearchScreen(
+                    database = database,
                     modifier = Modifier
                         .padding(innerPadding)
                         .fillMaxSize()
@@ -99,12 +107,30 @@ fun App(database: AppDatabase, modifier: Modifier = Modifier) {
 
 @ExperimentalMaterial3Api
 @Composable
-fun SearchScreen(modifier: Modifier = Modifier) {
+fun SearchScreen(database: AppDatabase, modifier: Modifier = Modifier) {
     var query by remember { mutableStateOf("") }
+    var lastUpdateTime by remember { mutableStateOf(-1L) }
+    val collegeDao = remember {
+        database.collegeDao()
+    }
+    var collegeSuggestions by remember { mutableStateOf(emptyList<College>()) }
+    val scope = rememberCoroutineScope()
+
+    LaunchedEffect(query) {
+        val currentTime: Long = Calendar.getInstance().time.time
+        if (currentTime - lastUpdateTime > 5000) {
+            scope.launch {
+                collegeSuggestions = collegeDao.searchTop5(query)
+            }
+
+        }
+    }
+
     Box(modifier = modifier) {
         Column {
             SearchBar(
                 query = query,
+
                 onQueryChange = { query = it },
                 onSearch = {},
                 active = true,
@@ -113,6 +139,12 @@ fun SearchScreen(modifier: Modifier = Modifier) {
             ) {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
 
+
+                    collegeSuggestions.forEach { college ->
+                        ListItem(
+                            headlineContent = { Text(college.collegeName) }
+                        )
+                    }
                 }
             }
         }
