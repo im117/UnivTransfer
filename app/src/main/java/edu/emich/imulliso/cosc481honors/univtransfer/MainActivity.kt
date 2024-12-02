@@ -20,11 +20,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +64,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-
 @Serializable
 object Home
 
@@ -85,7 +87,7 @@ fun App(database: AppDatabase, modifier: Modifier = Modifier) {
         }
     }, modifier = Modifier.fillMaxSize()
     ) { innerPadding ->
-        NavHost(navController = navController, startDestination = Home) {
+        NavHost(navController = navController, startDestination = Search) {
             composable<Home> {
                 HomeScreen(
                     modifier = Modifier
@@ -105,11 +107,40 @@ fun App(database: AppDatabase, modifier: Modifier = Modifier) {
     }
 }
 
-@ExperimentalMaterial3Api
 @Composable
 fun SearchScreen(database: AppDatabase, modifier: Modifier = Modifier) {
+    var step by remember { mutableIntStateOf(0) }
+
+    when (step) {
+        0 -> SearchForm(
+            database = database,
+            searchType = SearchType.TWO_YEAR,
+            onCollegeSelected = {
+                step++
+            },
+            modifier = modifier
+        )
+
+        1 -> SearchForm(
+            database = database,
+            searchType = SearchType.FOUR_YEAR,
+            onCollegeSelected = {},
+            modifier = modifier
+        )
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchForm(
+    database: AppDatabase,
+    searchType: SearchType,
+    onCollegeSelected: (College) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var query by remember { mutableStateOf("") }
-    var lastUpdateTime by remember { mutableStateOf(-1L) }
+    var lastUpdateTime by remember { mutableLongStateOf(-1L) }
     val collegeDao = remember {
         database.collegeDao()
     }
@@ -120,7 +151,12 @@ fun SearchScreen(database: AppDatabase, modifier: Modifier = Modifier) {
         val currentTime: Long = Calendar.getInstance().time.time
         if (currentTime - lastUpdateTime > 5000) {
             scope.launch {
-                collegeSuggestions = collegeDao.searchTop5(query)
+                collegeSuggestions = when (searchType) {
+                    SearchType.TWO_YEAR -> collegeDao.searchTop5TwoYear(query)
+                    SearchType.FOUR_YEAR -> collegeDao.searchTop5FourYear(query)
+                }
+
+                lastUpdateTime = Calendar.getInstance().time.time
             }
 
         }
@@ -135,15 +171,31 @@ fun SearchScreen(database: AppDatabase, modifier: Modifier = Modifier) {
                 onSearch = {},
                 active = true,
                 onActiveChange = { },
-                placeholder = { Text(stringResource(R.string.enter_4_year_college_name)) }
+                placeholder = {
+                    Text(
+                        stringResource(
+                            when (searchType) {
+                                SearchType.TWO_YEAR -> R.string.enter_2_year_college_name
+                                SearchType.FOUR_YEAR -> R.string.enter_4_year_college_name
+                            }
+
+                        )
+                    )
+                }
             ) {
                 Column(Modifier.verticalScroll(rememberScrollState())) {
 
 
                     collegeSuggestions.forEach { college ->
-                        ListItem(
-                            headlineContent = { Text(college.collegeName) }
-                        )
+                        Surface(
+                            onClick = {
+                                onCollegeSelected(college)
+                            }
+                        ) {
+                            ListItem(
+                                headlineContent = { Text(college.collegeName) },
+                            )
+                        }
                     }
                 }
             }

@@ -21,6 +21,27 @@ interface CollegeDao {
     )
     suspend fun searchTop5(query: String): List<College>
 
+    @Query(
+        """
+        SELECT * FROM college
+        WHERE LOWER(college_name) LIKE '%' || LOWER(:query) || '%'
+            AND is_four_year = 0
+        ORDER BY college_name
+        LIMIT 5
+    """
+    )
+    suspend fun searchTop5TwoYear(query: String): List<College>
+
+    @Query(
+        """
+        SELECT * FROM college
+        WHERE LOWER(college_name) LIKE '%' || LOWER(:query) || '%'
+            AND is_four_year = 1
+        ORDER BY college_name
+        LIMIT 5
+    """
+    )
+    suspend fun searchTop5FourYear(query: String): List<College>
 
     @Query("SELECT * FROM college WHERE is_four_year = 1")
     suspend fun getFourYear(): List<College>
