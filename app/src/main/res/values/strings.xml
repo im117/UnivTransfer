@@ -5,4 +5,5 @@
     <string name="enter_2_year_college_name">Enter 2-year college name</string>
     <string name="add_course">Add Course</string>
     <string name="enter_course">Enter course</string>
+    <string name="delete">Delete</string>
 </resources>

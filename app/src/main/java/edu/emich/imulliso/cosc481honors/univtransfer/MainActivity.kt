@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,10 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
@@ -32,6 +35,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -116,10 +120,28 @@ fun App(database: AppDatabase, modifier: Modifier = Modifier) {
 @Composable
 fun CourseInputForm(database: AppDatabase, college: College, modifier: Modifier = Modifier) {
     var showDialog by remember { mutableStateOf(false) }
+    val courses = remember { mutableStateListOf<Course>() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier.verticalScroll(state = rememberScrollState())
     ) {
+        // List the courses
+        courses.forEach { course ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    "${course.subjectCode} ${course.courseNumber}",
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(16.dp)
+                        .fillMaxSize()
+
+                )
+                IconButton(onClick = {}) {
+                    Icon(Icons.Default.Clear, stringResource(R.string.delete))
+                }
+            }
+        }
+
         Button(onClick = {
             showDialog = true
         }) {
@@ -129,8 +151,11 @@ fun CourseInputForm(database: AppDatabase, college: College, modifier: Modifier 
     }
 
     if (showDialog) {
-        CourseAddDialog(database, college, onDismissRequest = {
+        CourseAddDialog(database, college, onDismissRequest = { course ->
             showDialog = false
+            if (course != null) {
+                courses.add(course)
+            }
         })
     }
 }
