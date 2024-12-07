@@ -153,7 +153,7 @@ fun CourseInputForm(database: AppDatabase, college: College, modifier: Modifier 
     if (showDialog) {
         CourseAddDialog(database, college, onDismissRequest = { course ->
             showDialog = false
-            if (course != null) {
+            if (course != null && course !in courses) {
                 courses.add(course)
             }
         })
