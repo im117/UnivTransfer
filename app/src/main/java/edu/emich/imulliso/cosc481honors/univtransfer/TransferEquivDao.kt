@@ -8,7 +8,7 @@ abstract class TransferEquivDao {
     @Query(
         """
         SELECT * FROM transfer_equiv
-                WHERE course1Id = :courseId OR course2Id = :courseId
+                WHERE two_year_course_id = :courseId OR four_year_course_id = :courseId
         """
     )
     abstract fun getAllEquivalencyRecords(courseId: Int): List<TransferEquiv>

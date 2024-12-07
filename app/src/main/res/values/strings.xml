@@ -3,4 +3,6 @@
     <string name="new_search">New search</string>
     <string name="enter_4_year_college_name">Enter 4-year college name</string>
     <string name="enter_2_year_college_name">Enter 2-year college name</string>
+    <string name="add_course">Add Course</string>
+    <string name="enter_course">Enter course</string>
 </resources>

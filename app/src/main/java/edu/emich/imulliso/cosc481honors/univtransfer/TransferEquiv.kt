@@ -1,9 +1,10 @@
 package edu.emich.imulliso.cosc481honors.univtransfer
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 
-@Entity(tableName = "transfer_equiv", primaryKeys = ["course1Id", "course2Id"])
+@Entity(tableName = "transfer_equiv", primaryKeys = ["two_year_course_id", "four_year_course_id"])
 data class TransferEquiv(
-    val course1Id: Int,
-    val course2Id: Int,
+    @ColumnInfo(name = "two_year_course_id") val twoYearCourseId: Int,
+    @ColumnInfo(name = "four_year_course_id") val fourYearCourseId: Int,
 )
