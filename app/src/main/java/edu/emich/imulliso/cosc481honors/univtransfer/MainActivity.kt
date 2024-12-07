@@ -136,7 +136,9 @@ fun CourseInputForm(database: AppDatabase, college: College, modifier: Modifier 
                         .fillMaxSize()
 
                 )
-                IconButton(onClick = {}) {
+                IconButton(onClick = {
+                    courses.remove(course)
+                }) {
                     Icon(Icons.Default.Clear, stringResource(R.string.delete))
                 }
             }
@@ -174,6 +176,7 @@ fun CourseAddDialog(
     val courseDao = remember {
         database.courseDao()
     }
+    var searchFieldActive by remember { mutableStateOf(false) }
 
     LaunchedEffect(query) {
         if (query == "") {
@@ -206,8 +209,8 @@ fun CourseAddDialog(
                 },
                 onQueryChange = { query = it },
                 onSearch = {},
-                active = true,
-                onActiveChange = {}
+                active = searchFieldActive,
+                onActiveChange = { searchFieldActive = it }
             ) {
                 searchSuggestions.forEach { course ->
 
@@ -232,6 +235,7 @@ fun CourseAddDialog(
 fun SearchScreen(database: AppDatabase, modifier: Modifier = Modifier) {
     var step by remember { mutableIntStateOf(0) }
     var twoYearCollege by remember { mutableStateOf<College?>(null) }
+    var searchFieldActive by remember { mutableStateOf(false) }
     when (step) {
         0 -> SearchForm(
             database = database,
@@ -278,8 +282,10 @@ fun SearchForm(
     val collegeDao = remember {
         database.collegeDao()
     }
+    var searchFieldActive by remember { mutableStateOf(false) }
     var collegeSuggestions by remember { mutableStateOf(emptyList<College>()) }
     val scope = rememberCoroutineScope()
+
 
     LaunchedEffect(query) {
         val currentTime: Long = Calendar.getInstance().time.time
@@ -297,14 +303,17 @@ fun SearchForm(
     }
 
     Box(modifier = modifier) {
-        Column {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize()
+        ) {
             SearchBar(
                 query = query,
 
                 onQueryChange = { query = it },
                 onSearch = {},
-                active = true,
-                onActiveChange = { },
+                active = searchFieldActive,
+                onActiveChange = { searchFieldActive = it },
                 placeholder = {
                     Text(
                         stringResource(
