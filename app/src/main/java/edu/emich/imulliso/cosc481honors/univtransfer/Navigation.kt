@@ -2,6 +2,7 @@ package edu.emich.imulliso.cosc481honors.univtransfer
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
@@ -46,8 +47,8 @@ fun NavGraphBuilder.courseInputScreen(
     }
 }
 
-fun NavGraphBuilder.summaryPage() {
+fun NavGraphBuilder.summaryPage(navController: NavController) {
     composable<SummaryPage> {
-        SummaryPage()
+        SummaryPage(navController = navController)
     }
 }

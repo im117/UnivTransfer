@@ -12,16 +12,22 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SummaryPage(modifier: Modifier = Modifier) {
+fun SummaryPage(navController: NavController, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.transfer_search_results)) },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    // Back button
+                    IconButton(onClick = {
+                        // Go back
+                        navController.popBackStack()
+                    }) {
+                        // Icon for back button
                         Icon(
                             imageVector = Icons.AutoMirrored.Default.ArrowBack,
                             contentDescription = stringResource(R.string.navigate_up)
@@ -39,6 +45,6 @@ fun SummaryPage(modifier: Modifier = Modifier) {
             )
         }
     ) { innerPadding ->
-
+        innerPadding
     }
 }
