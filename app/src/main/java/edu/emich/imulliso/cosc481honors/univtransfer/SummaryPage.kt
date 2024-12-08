@@ -84,7 +84,9 @@ fun SummaryPage(
                     }
                 },
                 actions = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = {
+                        navController.navigate(FourYearInput)
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = stringResource(R.string.search),

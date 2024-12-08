@@ -52,6 +52,9 @@ fun App(database: AppDatabase) {
             twoYearCollege = college
             navController.navigate(CourseInputScreen)
         })
+
+
+
         courseInputScreen(
             navController = navController,
             database = database,
@@ -65,11 +68,17 @@ fun App(database: AppDatabase) {
             navController = navController,
             database = database,
             courseList = { courseList },
-            viewTransferDestinationDetails = {
-                transferDestination = it
+            viewTransferDestinationDetails = { college ->
+                transferDestination = college
                 navController.navigate(EquivDetailsPage)
             }
         )
+
+        fourYearInputDestination(database, onCollegeSelected = { college ->
+            transferDestination = college
+            navController.navigate(EquivDetailsPage)
+        })
+
         equivDetailsPage(
             navController = navController,
             database = database,

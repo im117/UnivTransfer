@@ -24,6 +24,24 @@ fun NavGraphBuilder.twoYearInputDestination(
     }
 }
 
+@Serializable
+object FourYearInput
+
+fun NavGraphBuilder.fourYearInputDestination(
+    database: AppDatabase,
+    onCollegeSelected: (College) -> Unit
+) {
+    composable<FourYearInput> {
+        SearchForm(
+            database = database,
+            searchType = SearchType.FOUR_YEAR,
+            onCollegeSelected = onCollegeSelected,
+            modifier = Modifier
+                .fillMaxSize()
+        )
+    }
+}
+
 
 @Serializable
 object CourseInputScreen
