@@ -60,7 +60,7 @@ fun App(database: AppDatabase) {
                 navController.navigate(SummaryPage)
             }
         )
-        summaryPage(navController = navController)
+        summaryPage(navController = navController, database = database, courseList = { courseList })
     }
 }
 

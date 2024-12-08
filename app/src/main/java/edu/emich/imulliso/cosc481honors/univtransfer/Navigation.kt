@@ -49,8 +49,16 @@ fun NavGraphBuilder.courseInputScreen(
     }
 }
 
-fun NavGraphBuilder.summaryPage(navController: NavController) {
+fun NavGraphBuilder.summaryPage(
+    navController: NavController,
+    database: AppDatabase,
+    courseList: () -> List<Course>
+) {
     composable<SummaryPage> {
-        SummaryPage(navController = navController)
+        SummaryPage(
+            navController = navController,
+            database = database,
+            courseList = courseList(),
+        )
     }
 }

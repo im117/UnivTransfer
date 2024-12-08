@@ -46,4 +46,5 @@ interface CollegeDao {
     @Query("SELECT * FROM college WHERE is_four_year = 1")
     suspend fun getFourYear(): List<College>
 
+
 }
