@@ -1,9 +1,7 @@
 package edu.emich.imulliso.cosc481honors.univtransfer
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import kotlinx.serialization.Serializable
@@ -15,7 +13,7 @@ object TwoYearInput
 object CourseInputScreen
 
 @Serializable
-object FourYear
+object SummaryPage
 
 fun NavGraphBuilder.twoYearInputDestination(
     database: AppDatabase,
@@ -32,14 +30,24 @@ fun NavGraphBuilder.twoYearInputDestination(
     }
 }
 
-fun NavGraphBuilder.courseInputScreen(database: AppDatabase, twoYearCollege: () -> College?) {
+fun NavGraphBuilder.courseInputScreen(
+    database: AppDatabase,
+    twoYearCollege: () -> College?,
+    onCourseListSelected: (List<Course>) -> Unit
+) {
     composable<CourseInputScreen> {
         CourseInputForm(
             database = database,
             college = twoYearCollege(),
+            onCourseListSelected = onCourseListSelected,
             modifier = Modifier
-                .padding(32.dp)
                 .fillMaxSize()
         )
+    }
+}
+
+fun NavGraphBuilder.summaryPage() {
+    composable<SummaryPage> {
+        SummaryPage()
     }
 }

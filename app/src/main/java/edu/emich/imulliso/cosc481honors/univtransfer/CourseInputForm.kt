@@ -9,12 +9,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -26,12 +30,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CourseInputForm(database: AppDatabase, college: College?, modifier: Modifier = Modifier) {
+fun CourseInputForm(
+    database: AppDatabase,
+    college: College?,
+    onCourseListSelected: (List<Course>) -> Unit,
+    modifier: Modifier = Modifier
+) {
     var showDialog by remember { mutableStateOf(false) }
     val courses = remember { mutableStateListOf<Course>() }
 
-    Scaffold(modifier = modifier) { innerPadding ->
+    Scaffold(
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.enter_courses)) }) },
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = { onCourseListSelected(courses) },
+                icon = { Icon(Icons.Default.Check, null) },
+                text = { Text(stringResource(R.string.done)) },
+
+                )
+        },
+        modifier = modifier
+    ) { innerPadding ->
         // Null handling
         if (college == null) {
             Box(
@@ -48,8 +69,16 @@ fun CourseInputForm(database: AppDatabase, college: College?, modifier: Modifier
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(innerPadding)
+                .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
         ) {
+            Text(
+                stringResource(
+                    R.string.enter_the_courses_you_have_taken_at_college,
+                    college.collegeName
+                ),
+                modifier = Modifier.padding(8.dp)
+            )
             // List the courses
             courses.forEach { course ->
                 Row(verticalAlignment = Alignment.CenterVertically) {

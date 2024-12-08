@@ -54,13 +54,24 @@ object Search
 fun App(database: AppDatabase) {
     val navController = rememberNavController()
     var twoYearCollege by remember { mutableStateOf<College?>(null) }
+    var courseList by remember { mutableStateOf(emptyList<Course>()) }
 
     NavHost(navController = navController, startDestination = TwoYearInput) {
         twoYearInputDestination(database, onCollegeSelected = { college ->
             twoYearCollege = college
             navController.navigate(CourseInputScreen)
         })
-        courseInputScreen(database, twoYearCollege = { twoYearCollege })
+        courseInputScreen(
+            database,
+            twoYearCollege = { twoYearCollege },
+            onCourseListSelected = { courses ->
+                courseList = courses
+                navController.navigate(SummaryPage)
+            }
+        )
+        summaryPage(
+
+        )
     }
 }
 

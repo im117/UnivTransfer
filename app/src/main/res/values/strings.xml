@@ -7,4 +7,11 @@
     <string name="enter_course">Enter course</string>
     <string name="delete">Delete</string>
     <string name="error_please_select_a_college">ERROR: Please select a college</string>
+    <string name="enter_courses">Enter courses</string>
+    <string name="enter_the_courses_you_have_taken_at_college">Enter the courses you have taken at %1$s:</string>
+    <string name="next">next</string>
+    <string name="done">Done</string>
+    <string name="transfer_search_results">Transfer Search Results</string>
+    <string name="search">Search</string>
+    <string name="navigate_up">Navigate up</string>
 </resources>
