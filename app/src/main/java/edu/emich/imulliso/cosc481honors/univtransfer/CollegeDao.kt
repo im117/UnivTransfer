@@ -43,8 +43,12 @@ interface CollegeDao {
     )
     suspend fun searchTop5FourYear(query: String): List<College>
 
-    @Query("SELECT * FROM college WHERE is_four_year = 1")
-    suspend fun getFourYear(): List<College>
+    @Query("SELECT COUNT(*) FROM college WHERE is_four_year = 1")
+    suspend fun getNumOfFourYear(): Int
+
+
+    @Query("SELECT * FROM college WHERE college_id = :collegeId")
+    suspend fun getCollegeById(collegeId: Int): College
 
 
 }

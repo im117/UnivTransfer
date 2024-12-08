@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -39,20 +41,24 @@ fun SummaryPage(
 
     // we want the percentage of courses that transfer to each uni. bc of this, it makes sense
     // to keep track of *how many* courses transfer to each one
-    // key: college id, value: number of xferring courses
-    var collegesWithEquiv by remember { mutableStateOf<Map<Int, Int>?>(null) }
-
+    // key: college, value: set of ids of courses that transfer
+    var collegesWithEquiv by remember { mutableStateOf<Map<College, Set<Int>>?>(null) }
 
     LaunchedEffect(courseList) {
         scope.launch {
-            val map = emptyMap<Int, Int>().toMutableMap()
+            val map = emptyMap<College, MutableSet<Int>>().toMutableMap()
             courseList.forEach { course ->
                 val equivList = database.transferEquivDao().getCollegeIdsWithEquiv(course.courseId)
-                equivList.forEach { college ->
+
+                // If equivalences exist, count the *course* for each college it transfers to
+                equivList.forEach { collegeId ->
+                    // Lookup college for the ID
+                    val college = database.collegeDao().getCollegeById(collegeId)
+
                     // count the equiv
-                    map.putIfAbsent(college, 0)
-                    map[college] =
-                        map[college]!! + 1// it's safe doing nonnull assert bc putIfAbsent
+                    map.putIfAbsent(college, mutableSetOf())
+                    map[college]!!.add(course.courseId)
+
                 }
             }
             collegesWithEquiv = map.toMap()
@@ -61,8 +67,7 @@ fun SummaryPage(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.transfer_search_results)) },
+            TopAppBar(title = { Text(stringResource(R.string.transfer_search_results)) },
                 navigationIcon = {
                     // Back button
                     IconButton(onClick = {
@@ -83,9 +88,8 @@ fun SummaryPage(
                             contentDescription = stringResource(R.string.search),
                         )
                     }
-                }
-            )
-        }
+                })
+        }, modifier = modifier
     ) { innerPadding ->
         if (collegesWithEquiv == null) {
             Box(
@@ -98,7 +102,18 @@ fun SummaryPage(
             }
         } else {
             Column(modifier = Modifier.padding(innerPadding)) {
-                Text(collegesWithEquiv.toString())
+                collegesWithEquiv!!.forEach { (college, courseIds) ->
+                    ListItem(
+                        headlineContent = { Text(college.collegeName) },
+                        supportingContent = { Text("${courseIds.size * 100 / courseList.size}% of your courses have transfer equivalencies at this school") },
+                        trailingContent = {
+                            Icon(
+                                Icons.AutoMirrored.Default.KeyboardArrowRight,
+                                null
+                            )
+                        }
+                    )
+                }
             }
         }
     }
