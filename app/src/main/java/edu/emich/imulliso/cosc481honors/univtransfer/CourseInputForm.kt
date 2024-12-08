@@ -18,6 +18,8 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -25,12 +27,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -43,8 +47,11 @@ fun CourseInputForm(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val courses = remember { mutableStateListOf<Course>() }
-
+    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarMessage = stringResource(R.string.course_list_empty)
+    val scope = rememberCoroutineScope()
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 // back icon
@@ -67,11 +74,19 @@ fun CourseInputForm(
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
-                onClick = { onCourseListSelected(courses) },
+                onClick = {
+                    if (courses.size == 0) {
+                        // If the course list is empty, show an error snackbar
+                        scope.launch {
+                            snackbarHostState.showSnackbar(snackbarMessage)
+                        }
+                    } else {
+                        onCourseListSelected(courses)
+                    }
+                },
                 icon = { Icon(Icons.Default.Check, null) },
                 text = { Text(stringResource(R.string.done)) },
-
-                )
+            )
         },
         modifier = modifier
     ) { innerPadding ->

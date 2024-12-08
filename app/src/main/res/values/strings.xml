@@ -14,4 +14,5 @@
     <string name="transfer_search_results">Transfer Search Results</string>
     <string name="search">Search</string>
     <string name="navigate_up">Navigate up</string>
+    <string name="course_list_empty">You must add at least one course</string>
 </resources>
