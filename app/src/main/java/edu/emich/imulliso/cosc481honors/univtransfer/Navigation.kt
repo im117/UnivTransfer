@@ -9,13 +9,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 object TwoYearInput
-
-@Serializable
-object CourseInputScreen
-
-@Serializable
-object SummaryPage
-
 fun NavGraphBuilder.twoYearInputDestination(
     database: AppDatabase,
     onCollegeSelected: (College) -> Unit
@@ -31,6 +24,9 @@ fun NavGraphBuilder.twoYearInputDestination(
     }
 }
 
+
+@Serializable
+object CourseInputScreen
 fun NavGraphBuilder.courseInputScreen(
     navController: NavController,
     database: AppDatabase,
@@ -49,15 +45,39 @@ fun NavGraphBuilder.courseInputScreen(
     }
 }
 
+@Serializable
+object SummaryPage
 fun NavGraphBuilder.summaryPage(
     navController: NavController,
     database: AppDatabase,
-    courseList: () -> List<Course>
+    courseList: () -> List<Course>,
+    viewTransferDestinationDetails: (College) -> Unit
 ) {
     composable<SummaryPage> {
         SummaryPage(
             navController = navController,
             database = database,
+            courseList = courseList(),
+            onTransferDestinationClicked = viewTransferDestinationDetails,
+        )
+    }
+}
+
+
+@Serializable
+object EquivDetailsPage
+
+fun NavGraphBuilder.equivDetailsPage(
+    navController: NavController,
+    database: AppDatabase,
+    transferDestination: () -> College?,
+    courseList: () -> List<Course>
+) {
+    composable<EquivDetailsPage> {
+        EquivDetailsPage(
+            navController = navController,
+            database = database,
+            transferDestination = transferDestination(),
             courseList = courseList(),
         )
     }

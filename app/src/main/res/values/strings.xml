@@ -15,4 +15,8 @@
     <string name="search">Search</string>
     <string name="navigate_up">Navigate up</string>
     <string name="course_list_empty">You must add at least one course</string>
+    <string name="full_course_listing">%1$s %2$s:\n %3$s</string>
+    <string name="error_transfer_destination_must_be_specified">Error: transfer destination must be specified</string>
+    <string name="error">Error</string>
+    <string name="of_your_courses_have_transfer_equivalencies_at_this_school">%1$s%% of your courses have transfer equivalencies at this school</string>
 </resources>

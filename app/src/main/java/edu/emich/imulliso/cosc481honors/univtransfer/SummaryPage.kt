@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -35,7 +36,8 @@ fun SummaryPage(
     navController: NavController,
     database: AppDatabase,
     courseList: List<Course>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onTransferDestinationClicked: (College) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -103,17 +105,31 @@ fun SummaryPage(
         } else {
             Column(modifier = Modifier.padding(innerPadding)) {
                 collegesWithEquiv!!.forEach { (college, courseIds) ->
-                    ListItem(
-                        headlineContent = { Text(college.collegeName) },
-                        supportingContent = { Text("${courseIds.size * 100 / courseList.size}% of your courses have transfer equivalencies at this school") },
-                        trailingContent = {
-                            Icon(
-                                Icons.AutoMirrored.Default.KeyboardArrowRight,
-                                null
-                            )
+                    Surface(
+                        onClick = {
+                            onTransferDestinationClicked(college)
                         }
-                    )
+                    ) {
+                        ListItem(
+                            headlineContent = { Text(college.collegeName) },
+                            supportingContent = {
+                                Text(
+                                    stringResource(
+                                        R.string.of_your_courses_have_transfer_equivalencies_at_this_school,
+                                        (courseIds.size * 100.0F / courseList.size).toString()
+                                    )
+                                )
+                            },
+                            trailingContent = {
+                                Icon(
+                                    Icons.AutoMirrored.Default.KeyboardArrowRight,
+                                    null
+                                )
+                            }
+                        )
+                    }
                 }
+
             }
         }
     }

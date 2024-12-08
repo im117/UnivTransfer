@@ -45,6 +45,7 @@ fun App(database: AppDatabase) {
     val navController = rememberNavController()
     var twoYearCollege by remember { mutableStateOf<College?>(null) }
     var courseList by remember { mutableStateOf(emptyList<Course>()) }
+    var transferDestination by remember { mutableStateOf<College?>(null) }
 
     NavHost(navController = navController, startDestination = TwoYearInput) {
         twoYearInputDestination(database, onCollegeSelected = { college ->
@@ -60,7 +61,21 @@ fun App(database: AppDatabase) {
                 navController.navigate(SummaryPage)
             }
         )
-        summaryPage(navController = navController, database = database, courseList = { courseList })
+        summaryPage(
+            navController = navController,
+            database = database,
+            courseList = { courseList },
+            viewTransferDestinationDetails = {
+                transferDestination = it
+                navController.navigate(EquivDetailsPage)
+            }
+        )
+        equivDetailsPage(
+            navController = navController,
+            database = database,
+            transferDestination = { transferDestination },
+            courseList = { courseList }
+        )
     }
 }
 
