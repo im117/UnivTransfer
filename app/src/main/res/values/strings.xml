@@ -6,4 +6,5 @@
     <string name="add_course">Add Course</string>
     <string name="enter_course">Enter course</string>
     <string name="delete">Delete</string>
+    <string name="error_please_select_a_college">ERROR: Please select a college</string>
 </resources>
