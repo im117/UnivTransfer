@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,7 +20,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import edu.emich.imulliso.cosc481honors.univtransfer.ui.theme.UnivTransferTheme
-import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
 
@@ -42,14 +40,6 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@Serializable
-object Home
-
-@Serializable
-object Search
-
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun App(database: AppDatabase) {
     val navController = rememberNavController()
@@ -62,7 +52,8 @@ fun App(database: AppDatabase) {
             navController.navigate(CourseInputScreen)
         })
         courseInputScreen(
-            database,
+            navController = navController,
+            database = database,
             twoYearCollege = { twoYearCollege },
             onCourseListSelected = { courses ->
                 courseList = courses

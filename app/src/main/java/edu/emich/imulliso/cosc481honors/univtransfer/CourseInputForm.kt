@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -29,10 +30,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CourseInputForm(
+    navController: NavController,
     database: AppDatabase,
     college: College?,
     onCourseListSelected: (List<Course>) -> Unit,
@@ -42,7 +45,26 @@ fun CourseInputForm(
     val courses = remember { mutableStateListOf<Course>() }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.enter_courses)) }) },
+        topBar = {
+            TopAppBar(
+                // back icon
+                navigationIcon = {
+                    IconButton(
+                        onClick = {
+                            // Go back
+                            navController.popBackStack()
+                        }
+                    ) {
+                        Icon(
+                            Icons.AutoMirrored.Default.ArrowBack,
+                            stringResource(R.string.navigate_up)
+                        )
+                    }
+                },
+                title = { Text(stringResource(R.string.enter_courses)) },
+
+                )
+        },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = { onCourseListSelected(courses) },

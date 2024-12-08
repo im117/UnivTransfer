@@ -32,12 +32,14 @@ fun NavGraphBuilder.twoYearInputDestination(
 }
 
 fun NavGraphBuilder.courseInputScreen(
+    navController: NavController,
     database: AppDatabase,
     twoYearCollege: () -> College?,
     onCourseListSelected: (List<Course>) -> Unit
 ) {
     composable<CourseInputScreen> {
         CourseInputForm(
+            navController = navController,
             database = database,
             college = twoYearCollege(),
             onCourseListSelected = onCourseListSelected,
