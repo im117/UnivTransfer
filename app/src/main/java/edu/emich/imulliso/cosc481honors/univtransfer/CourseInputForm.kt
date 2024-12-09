@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 
@@ -43,10 +43,10 @@ fun CourseInputForm(
     database: AppDatabase,
     college: College?,
     onCourseListSelected: (List<Course>) -> Unit,
+    viewModel: CourseInputViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    val courses = remember { mutableStateListOf<Course>() }
     val snackbarHostState = remember { SnackbarHostState() }
     val snackbarMessage = stringResource(R.string.course_list_empty)
     val scope = rememberCoroutineScope()
@@ -75,13 +75,13 @@ fun CourseInputForm(
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 onClick = {
-                    if (courses.size == 0) {
+                    if (viewModel.courses.isEmpty()) {
                         // If the course list is empty, show an error snackbar
                         scope.launch {
                             snackbarHostState.showSnackbar(snackbarMessage)
                         }
                     } else {
-                        onCourseListSelected(courses)
+                        onCourseListSelected(viewModel.courses)
                     }
                 },
                 icon = { Icon(Icons.Default.Check, null) },
@@ -117,7 +117,7 @@ fun CourseInputForm(
                 modifier = Modifier.padding(8.dp)
             )
             // List the courses
-            courses.forEach { course ->
+            viewModel.courses.forEach { course ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         "${course.subjectCode} ${course.courseNumber}",
@@ -128,7 +128,7 @@ fun CourseInputForm(
 
                     )
                     IconButton(onClick = {
-                        courses.remove(course)
+                        viewModel.removeCourse(course)
                     }) {
                         Icon(Icons.Default.Clear, stringResource(R.string.delete))
                     }
@@ -146,8 +146,8 @@ fun CourseInputForm(
         if (showDialog) {
             CourseAddDialog(database, college, onDismissRequest = { course ->
                 showDialog = false
-                if (course != null && course !in courses) {
-                    courses.add(course)
+                if (course != null && course !in viewModel.courses) {
+                    viewModel.addCourse(course)
                 }
             })
         }

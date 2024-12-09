@@ -3,19 +3,17 @@ package edu.emich.imulliso.cosc481honors.univtransfer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
@@ -25,7 +23,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        //enableEdgeToEdge()
         val db = Room.databaseBuilder(
             applicationContext, AppDatabase::class.java, "transfer-db"
         ).createFromAsset("transfer-db.db").build()
@@ -41,15 +39,16 @@ class MainActivity : ComponentActivity() {
 
 
 @Composable
-fun App(database: AppDatabase) {
+fun App(
+    database: AppDatabase,
+    viewModel: MainViewModel = viewModel(),
+) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val navController = rememberNavController()
-    var twoYearCollege by remember { mutableStateOf<College?>(null) }
-    var courseList by remember { mutableStateOf(emptyList<Course>()) }
-    var transferDestination by remember { mutableStateOf<College?>(null) }
 
     NavHost(navController = navController, startDestination = TwoYearInput) {
         twoYearInputDestination(database, onCollegeSelected = { college ->
-            twoYearCollege = college
+            viewModel.updateState(twoYearCollege = college)
             navController.navigate(CourseInputScreen)
         })
 
@@ -58,32 +57,32 @@ fun App(database: AppDatabase) {
         courseInputScreen(
             navController = navController,
             database = database,
-            twoYearCollege = { twoYearCollege },
+            twoYearCollege = { uiState.twoYearCollege },
             onCourseListSelected = { courses ->
-                courseList = courses
+                viewModel.updateState(courseList = courses)
                 navController.navigate(SummaryPage)
             }
         )
         summaryPage(
             navController = navController,
             database = database,
-            courseList = { courseList },
+            courseList = { uiState.courseList },
             viewTransferDestinationDetails = { college ->
-                transferDestination = college
+                viewModel.updateState(transferDestination = college)
                 navController.navigate(EquivDetailsPage)
             }
         )
 
         fourYearInputDestination(database, onCollegeSelected = { college ->
-            transferDestination = college
+            viewModel.updateState(transferDestination = college)
             navController.navigate(EquivDetailsPage)
         })
 
         equivDetailsPage(
             navController = navController,
             database = database,
-            transferDestination = { transferDestination },
-            courseList = { courseList }
+            transferDestination = { uiState.transferDestination },
+            courseList = { uiState.courseList }
         )
     }
 }
